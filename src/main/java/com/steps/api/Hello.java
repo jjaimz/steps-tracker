@@ -1,25 +1,32 @@
 package com.steps.api;
 
 import com.steps.business.User;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 import java.util.List;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.ApplicationPath;
 
 import static com.steps.data.HikariUtil.fetch;
 
 @Path("/hello")
+
 public class Hello {
 
+    private Object MediaType;
+
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<User> getUsers() throws SQLException {
-        String query = "SELECT * FROM users";
-        return fetch(query);
+    @Produces(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+    public String getIt() {
+        return "Got it!";
     }
+
+//    @GET
+//    @Produces(jakarta.ws.rs.core.MediaType.APPLICATION_JSON)
+//    public List<User> getUsers() throws SQLException {
+//        String query = "SELECT * FROM users";
+//        return fetch(query);
+//    }
 }

@@ -110,7 +110,7 @@ public class HikariUtil {
     }
 
     // UPDATE operation
-    public static <T> void updateUser(T item) {
+    public static <T> void updateEntity(T item) {
         try {
             Connection connection = HikariUtil.getConnection();
 

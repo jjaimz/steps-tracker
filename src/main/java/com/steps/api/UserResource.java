@@ -7,8 +7,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
 import java.util.List;
-import static com.steps.data.HikariUtil.fetch;
-import static com.steps.data.HikariUtil.insertEntity;
+
+import static com.steps.data.HikariUtil.*;
 
 @Path("/users")
 public class UserResource {
@@ -27,5 +27,26 @@ public class UserResource {
         String query = String.format("SELECT * FROM users WHERE name=\"%s\" AND email='%s'", user.getName(), user.getEmail());
         List<User> users = fetch(query);
         return users.get(0);
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public User updateUser(User user) throws SQLException {
+        updateEntity(user);
+        String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+        List<User> users = fetch(query);
+        return users.get(0);
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<User> deleteUser(User user) throws SQLException {
+        String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+        List<User> users = fetch(query);
+        user = users.get(0);
+        removeUser(user);
+        return getUsers();
     }
 }

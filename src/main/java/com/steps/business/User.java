@@ -1,9 +1,14 @@
 package com.steps.business;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class User {
+    @JsonProperty("id")
     private int id;
+    @JsonProperty("name")
     private String name;
+    @JsonProperty("email")
     private String email;
+    @JsonProperty("password")
     private String password;
 
     public String getName() {

@@ -6,6 +6,10 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
+
 public class WebServer {
     public static void main(String[] args) {
         Server myserver = new Server(1116);
@@ -18,6 +22,9 @@ public class WebServer {
         context.addServlet(defaultServletHolder, "/");
         myserver.setHandler(context);
 
+        ServletContextHandler apiHandler = HelloHandler();
+        myserver.setHandler(apiHandler);
+
         try {
             myserver.start();
             myserver.join();
@@ -26,5 +33,22 @@ public class WebServer {
             e.printStackTrace();
         }
     }
+
+    static ServletContextHandler HelloHandler() {
+        ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        handler.setContextPath("/");
+
+        ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.packages("com.steps.api");
+        resourceConfig.register(JacksonFeature.class);
+//        resourceConfig.register(Hello.class);
+
+        handler.addServlet(new ServletHolder(new ServletContainer(resourceConfig)), "/api/*");
+
+        return handler;
+
+    }
+
+
 
 }

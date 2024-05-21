@@ -14,26 +14,27 @@ import static com.steps.data.HikariUtil.*;
 public class UserResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response getUsers(User user) throws SQLException {
+//    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUsers(@QueryParam("id") Integer id,
+                             @QueryParam("email") String email) throws SQLException {
         try {
-            if (user == null) {
+            if (id == null && email == null) {
                 String query = "SELECT * FROM users";
                 List<User> users = fetch(query);
                 return Response.ok(users).build();
-            } else if (user.getId() != 0 && user.getEmail() != null) {
+            } else if (id != null && email != null) {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("Error 400: Query with only id, only email, or none")
                         .build();
-            } else if (user.getId() != 0) {
-                String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+            } else if (id != null) {
+                String query = String.format("SELECT * FROM users WHERE id=%d", id);
                 List<User> users = fetch(query);
                 if (users.isEmpty()) {
                     return Response.ok(users).build();
                 }
                 return Response.ok(users.get(0)).build();
-            } else if (user.getEmail() != null) {
-                String query = String.format("SELECT * FROM users WHERE email='%s'", user.getEmail());
+            } else if (email != null) {
+                String query = String.format("SELECT * FROM users WHERE email='%s'", email);
                 List<User> users = fetch(query);
                 if (users.isEmpty()) {
                     return Response.ok(users).build();

@@ -57,10 +57,24 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(User user) throws SQLException {
         try {
-            insertEntity(user);
+            if (user.getEmail() == null || user.getName() == null || user.getPassword() == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Error 400: User parameters \"name\", \"email\", or \"password\" not specified")
+                        .build();
+            }
             String query = String.format("SELECT * FROM users WHERE name=\"%s\" AND email='%s'",
                     user.getName(), user.getEmail());
+
             List<User> users = fetch(query);
+            if (!users.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(String.format("Error 400: User with name: %s and email: %s already exists",
+                                        user.getName(), user.getEmail()))
+                        .build();
+            }
+            insertEntity(user);
+
+            users = fetch(query);
             return Response.ok(users.get(0)).build();
         }
         catch (Exception e) {
@@ -75,9 +89,24 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateUser(User user) throws SQLException {
         try {
-            updateEntity(user);
+            if (user.getId() == 0 || user.getEmail() == null || user.getName() == null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Error 400: User parameters \"id\", \"name\", or \"email\" not specified")
+                        .build();
+            }
+
             String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
             List<User> users = fetch(query);
+
+            if (users.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Error 400: User with given id does not exist")
+                        .build();
+            }
+
+            user.setPassword(users.get(0).getPassword());
+            updateEntity(user);
+            users = fetch(query);
             return Response.ok(users.get(0)).build();
         }
         catch (Exception e) {
@@ -87,21 +116,36 @@ public class UserResource {
         }
     }
 
-//    @DELETE
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    public Response deleteUser(User user) throws SQLException {
-//        try {
-//            String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
-//            List<User> users = fetch(query);
-//            user = users.get(0);
-//            removeUser(user);
-//            return getUsers();
-//        }
-//        catch (Exception e) {
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                    .entity("Exception caught: " + e.getMessage())
-//                    .build();
-//        }
-//    }
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response deleteUser(User user) throws SQLException {
+        try {
+            if (user.getId() == 0) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Error 400: Provide parameters \"id\"")
+                        .build();
+            }
+            String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+            List<User> users = fetch(query);
+
+            if (users.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Error 400: User with \"id\" does not exist")
+                        .build();
+            }
+            user = users.get(0);
+            removeUser(user);
+
+            String q = "SELECT * FROM users";
+            users = fetch(q);
+            return Response.ok(users).build();
+
+        }
+        catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Exception caught: " + e.getMessage())
+                    .build();
+        }
+    }
 }

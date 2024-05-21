@@ -19,7 +19,7 @@ public class UserResource {
         return fetch(query);
     }
 
-    @PUT
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public User addUser(User user) throws SQLException {
@@ -29,7 +29,7 @@ public class UserResource {
         return users.get(0);
     }
 
-    @POST
+    @PUT
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public User updateUser(User user) throws SQLException {

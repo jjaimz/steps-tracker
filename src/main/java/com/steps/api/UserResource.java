@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.steps.data.HikariUtil.*;
@@ -136,10 +137,7 @@ public class UserResource {
             }
             user = users.get(0);
             removeUser(user);
-
-            String q = "SELECT * FROM users";
-            users = fetch(q);
-            return Response.ok(users).build();
+            return Response.noContent().build();
 
         }
         catch (Exception e) {

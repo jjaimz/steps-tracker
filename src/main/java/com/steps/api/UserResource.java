@@ -14,17 +14,41 @@ import static com.steps.data.HikariUtil.*;
 public class UserResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getUsers() throws SQLException {
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response getUsers(User user) throws SQLException {
         try {
-            String query = "SELECT * FROM users";
-            List<User> users = fetch(query);
-            return Response.ok(users).build();
+            if (user == null) {
+                String query = "SELECT * FROM users";
+                List<User> users = fetch(query);
+                return Response.ok(users).build();
+            } else if (user.getId() != 0 && user.getEmail() != null) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Error 400: Query with only id, only email, or none")
+                        .build();
+            } else if (user.getId() != 0) {
+                String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+                List<User> users = fetch(query);
+                if (users.isEmpty()) {
+                    return Response.ok(users).build();
+                }
+                return Response.ok(users.get(0)).build();
+            } else if (user.getEmail() != null) {
+                String query = String.format("SELECT * FROM users WHERE email='%s'", user.getEmail());
+                List<User> users = fetch(query);
+                if (users.isEmpty()) {
+                    return Response.ok(users).build();
+                }
+                return Response.ok(users.get(0)).build();
+            }
         }
         catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Exception caught: " + e.getMessage())
                     .build();
         }
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity("Error 400: Query with only id, only email, or none")
+                .build();
     }
 
     @POST
@@ -62,21 +86,21 @@ public class UserResource {
         }
     }
 
-    @DELETE
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(User user) throws SQLException {
-        try {
-            String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
-            List<User> users = fetch(query);
-            user = users.get(0);
-            removeUser(user);
-            return getUsers();
-        }
-        catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Exception caught: " + e.getMessage())
-                    .build();
-        }
-    }
+//    @DELETE
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    public Response deleteUser(User user) throws SQLException {
+//        try {
+//            String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+//            List<User> users = fetch(query);
+//            user = users.get(0);
+//            removeUser(user);
+//            return getUsers();
+//        }
+//        catch (Exception e) {
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//                    .entity("Exception caught: " + e.getMessage())
+//                    .build();
+//        }
+//    }
 }

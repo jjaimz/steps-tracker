@@ -8,6 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.steps.security.PasswordEncrypterService.encryptPassword;
+
 public class HikariUtil {
     private static HikariConfig config = new HikariConfig();
     private static HikariDataSource ds;
@@ -89,7 +91,7 @@ public class HikariUtil {
 
                 statement.setString(1, ((User) item).getName());
                 statement.setString(2, ((User) item).getEmail());
-                statement.setString(3, ((User) item).getPassword());
+                statement.setString(3, encryptPassword(((User) item).getPassword()));
             } else if (item instanceof Steps) {
                 statement = connection.prepareStatement(
                         "INSERT INTO steps (users_id, date, steps, image) VALUES (?, ?, ?, ?)"

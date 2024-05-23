@@ -22,7 +22,7 @@ public class WebServer {
         context.addServlet(defaultServletHolder, "/");
         myserver.setHandler(context);
 
-        ServletContextHandler apiHandler = HelloHandler();
+        ServletContextHandler apiHandler = apiHandler();
         myserver.setHandler(apiHandler);
 
         try {
@@ -34,7 +34,7 @@ public class WebServer {
         }
     }
 
-    static ServletContextHandler HelloHandler() {
+    static ServletContextHandler apiHandler() {
         ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
         handler.setContextPath("/");
 

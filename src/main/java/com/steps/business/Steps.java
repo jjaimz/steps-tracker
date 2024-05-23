@@ -1,10 +1,17 @@
 package com.steps.business;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Steps {
+    @JsonProperty("id")
     private int id;
+    @JsonProperty("users_id")
     private int users_id;
+    @JsonProperty("date")
     private String date;
+    @JsonProperty("steps")
     private int steps;
+    @JsonProperty("image")
     private String image;
 
     @Override

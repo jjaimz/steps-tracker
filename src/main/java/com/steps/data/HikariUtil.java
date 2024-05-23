@@ -178,5 +178,21 @@ public class HikariUtil {
         }
     }
 
+    public static boolean userExistsById(int id) {
+        String query = "SELECT 1 FROM users WHERE id = ?";
+        try (Connection connection = HikariUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+
 
 }

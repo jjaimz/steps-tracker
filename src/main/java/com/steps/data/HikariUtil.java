@@ -146,7 +146,7 @@ public class HikariUtil {
     }
 
     // DELETE users operation
-    public static <T> void removeUser(T item) throws SQLException {
+    public static <T> void removeEntity(T item) throws SQLException {
         try {
             Connection connection = HikariUtil.getConnection();
 

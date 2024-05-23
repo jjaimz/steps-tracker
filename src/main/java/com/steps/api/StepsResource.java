@@ -5,12 +5,10 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import static com.steps.api.DatetimeService.dateTimeToEpoch;
-import static com.steps.data.HikariUtil.fetch;
-import static com.steps.data.HikariUtil.userExistsById;
+import static com.steps.data.HikariUtil.*;
 
 @Path("/steps")
 public class StepsResource {
@@ -66,8 +64,118 @@ public class StepsResource {
         }
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
-            err.setErrorCode(41005);
+            err.setErrorCode(42004);
             err.setErrorMessage("Exception occurred during steps creation process: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(err)
+                    .build();
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response addSteps(Steps step) {
+        try {
+            if (step.getSteps() == 0 || step.getUsers_id() == 0 || step.getImage() == null || step.getDate() == null) {
+                ErrorResponse err = new ErrorResponse();
+                err.setErrorCode(42005);
+                String miss_params = "";
+                int missing_params = 0;
+
+                if (step.getUsers_id() == 0) {
+                    miss_params = "users_id";
+                    missing_params++;
+                }
+                if (step.getDate() == null) {
+                    if (missing_params > 0) {
+                        miss_params += ", date";
+                    }
+                    else {
+                        miss_params = "date";
+                    }
+                    missing_params++;
+                }
+                if (step.getSteps() == 0) {
+                    if (missing_params > 0) {
+                        miss_params += ", steps";
+                    }
+                    else {
+                        miss_params = "steps";
+                    }
+                    missing_params++;
+                }
+                if (step.getImage() == null) {
+                    if (missing_params > 0) {
+                        miss_params += ", image";
+                    }
+                    else {
+                        miss_params = "image";
+                    }
+                    missing_params++;
+                }
+                err.setErrorMessage(missing_params + " missing parameters: " + miss_params);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(err)
+                        .build();
+            }
+            if (!userExistsById(step.getUsers_id())) {
+                ErrorResponse err = new ErrorResponse();
+                err.setErrorCode(42006);
+                err.setErrorMessage("User with user_id does not exist");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(err)
+                        .build();
+            }
+            step.setDate(String.valueOf(dateTimeToEpoch(step.getDate())));
+            insertEntity(step);
+
+            String query = String.format("SELECT * FROM steps WHERE date=%d AND users_id=%d",
+                    Long.parseLong(step.getDate()), step.getUsers_id());
+
+            List<Steps> steps = fetch(query);
+
+            return Response.ok(steps.get(0)).build();
+        }
+        catch (Exception e) {
+            ErrorResponse err = new ErrorResponse();
+            err.setErrorCode(42007);
+            err.setErrorMessage("Exception occurred during steps creation process: " + e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(err)
+                    .build();
+        }
+    }
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteSteps(Steps step) {
+        try {
+            if (step.getId() == 0) {
+                ErrorResponse err = new ErrorResponse();
+                err.setErrorCode(42008);
+                err.setErrorMessage("Steps id parameter not provided");
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(err)
+                        .build();
+            }
+
+            String query = "SELECT * FROM steps WHERE id=" + step.getId();
+            List<Steps> steps = fetch(query);
+            if (steps.isEmpty()) {
+                ErrorResponse err = new ErrorResponse();
+                err.setErrorCode(42008);
+                err.setErrorMessage("Steps record with id not found");
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(err)
+                        .build();
+            }
+            removeEntity(step);
+            return Response.noContent().build();
+        }
+        catch (Exception e) {
+            ErrorResponse err = new ErrorResponse();
+            err.setErrorCode(42009);
+            err.setErrorMessage("Exception occurred during steps deletion process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)
                     .build();

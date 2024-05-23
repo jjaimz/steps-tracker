@@ -216,7 +216,7 @@ public class UserResource {
                         .build();
             }
             user = users.get(0);
-            removeUser(user);
+            removeEntity(user);
             return Response.noContent().build();
         }
         catch (Exception e) {

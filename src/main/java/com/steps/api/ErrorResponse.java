@@ -3,35 +3,25 @@ package com.steps.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ErrorResponse {
-//    @JsonProperty("type")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String type;
-    @JsonProperty("title")
-    private String title;
-    @JsonProperty("detail")
-    private String detail;
+    @JsonProperty("errorCode")
+    private int errorCode;
+    @JsonProperty("errorMessage")
+    private String errorMessage;
 
-    public String getType() {
-        return type;
+
+    public int getErrorCode() {
+        return errorCode;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
     }
 
-    public String getTitle() {
-        return title;
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

@@ -6,7 +6,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.steps.data.HikariUtil.*;
@@ -26,9 +25,8 @@ public class UserResource {
             } else if (id != null && email != null) {
 
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/invalid-parameters");
-                err.setTitle("Invalid parameters");
-                err.setDetail("Query failed due to id and email both being passed in.");
+                err.setErrorCode(41001);
+                err.setErrorMessage("Query failed due to id and email both being passed in.");
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -50,9 +48,8 @@ public class UserResource {
         }
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
-            err.setType("/errors/internal-server-error");
-            err.setTitle("Internal Server Error");
-            err.setDetail("Exception occurred during user retrieval process: " + e.getMessage());
+            err.setErrorCode(41002);
+            err.setErrorMessage("Exception occurred during user retrieval process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)
                     .build();
@@ -66,8 +63,7 @@ public class UserResource {
         try {
             if (user.getEmail() == null || user.getName() == null || user.getPassword() == null) {
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/invalid-parameters");
-                err.setTitle("Invalid Parameters");
+                err.setErrorCode(41003);
 
                 String miss_params = "";
                 int missing_params = 0;
@@ -94,7 +90,7 @@ public class UserResource {
                     missing_params++;
                 }
 
-                err.setDetail(missing_params + " missing parameters: " + miss_params);
+                err.setErrorMessage(missing_params + " missing parameters: " + miss_params);
 
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
@@ -106,9 +102,8 @@ public class UserResource {
             List<User> users = fetch(query);
             if (!users.isEmpty()) {
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/already-exists");
-                err.setTitle("Already Exists");
-                err.setDetail("User already exists: " + user.getName() + " " + user.getEmail());
+                err.setErrorCode(41004);
+                err.setErrorMessage("User already exists: " + user.getName() + " " + user.getEmail());
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -120,9 +115,8 @@ public class UserResource {
         }
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
-            err.setType("/errors/internal-server-error");
-            err.setTitle("Internal Server Error");
-            err.setDetail("Exception occurred during user creation process: " + e.getMessage());
+            err.setErrorCode(41005);
+            err.setErrorMessage("Exception occurred during user creation process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)
                     .build();
@@ -137,8 +131,7 @@ public class UserResource {
             if (user.getId() == 0 || user.getEmail() == null || user.getName() == null) {
 
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/invalid-parameters");
-                err.setTitle("Invalid Parameters");
+                err.setErrorCode(41006);
 
                 String miss_params = "";
                 int missing_params = 0;
@@ -165,7 +158,7 @@ public class UserResource {
                     }
                     missing_params++;
                 }
-                err.setDetail(missing_params + " missing parameters: " + miss_params);
+                err.setErrorMessage(missing_params + " missing parameters: " + miss_params);
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -176,9 +169,8 @@ public class UserResource {
 
             if (users.isEmpty()) {
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/invalid-parameters");
-                err.setTitle("Invalid Parameters");
-                err.setDetail("Delete failed due to user with corresponding id not existing");
+                err.setErrorCode(41007);
+                err.setErrorMessage("Delete failed due to user with corresponding id not existing");
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -191,9 +183,8 @@ public class UserResource {
         }
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
-            err.setType("/errors/internal-server-error");
-            err.setTitle("Internal Server Error");
-            err.setDetail("Exception occurred during user updating process: " + e.getMessage());
+            err.setErrorCode(41008);
+            err.setErrorMessage("Exception occurred during user updating process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)
                     .build();
@@ -207,9 +198,8 @@ public class UserResource {
         try {
             if (user.getId() == 0) {
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/invalid-parameters");
-                err.setTitle("Invalid Parameters");
-                err.setDetail("Delete failed due to id not being provided");
+                err.setErrorCode(41009);
+                err.setErrorMessage("Delete failed due to id not being provided");
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -219,9 +209,8 @@ public class UserResource {
 
             if (users.isEmpty()) {
                 ErrorResponse err = new ErrorResponse();
-                err.setType("/errors/invalid-parameters");
-                err.setTitle("Invalid Parameters");
-                err.setDetail("Delete failed due to user with corresponding id not existing");
+                err.setErrorCode(41010);
+                err.setErrorMessage("Delete failed due to user with corresponding id not existing");
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -232,9 +221,8 @@ public class UserResource {
         }
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
-            err.setType("/errors/internal-server-error");
-            err.setTitle("Internal Server Error");
-            err.setDetail("Exception occurred during user deletion process: " + e.getMessage());
+            err.setErrorCode(41011);
+            err.setErrorMessage("Exception occurred during user deletion process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)
                     .build();

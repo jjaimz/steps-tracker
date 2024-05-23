@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.util.List;
 
+import static com.steps.api.DatetimeService.dateTimeToEpoch;
 import static com.steps.data.HikariUtil.fetch;
 import static com.steps.data.HikariUtil.userExistsById;
 
@@ -15,7 +16,7 @@ import static com.steps.data.HikariUtil.userExistsById;
 public class StepsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSteps(@QueryParam("id") Integer id, @QueryParam("from") Integer from, @QueryParam("to") Integer to,
+    public Response getSteps(@QueryParam("id") Integer id, @QueryParam("from") String from, @QueryParam("to") String to,
                              @QueryParam("users_id") Integer users_id) {
         try {
             if (id != null) {
@@ -40,7 +41,10 @@ public class StepsResource {
                         .entity(err)
                         .build();
             } else if (users_id == null) {
-                String query = String.format("SELECT * FROM steps WHERE CAST(date AS UNSIGNED) BETWEEN %d AND %d", from, to);
+                long convertedFrom = dateTimeToEpoch(from);
+                long convertedTo = dateTimeToEpoch(to);
+                String query = String.format("SELECT * FROM steps WHERE CAST(date AS UNSIGNED) BETWEEN %d AND %d",
+                        convertedFrom, convertedTo);
                 List<Steps> steps = fetch(query);
                 return Response.ok(steps).build();
             } else {
@@ -52,7 +56,10 @@ public class StepsResource {
                             .entity(err)
                             .build();
                 }
-                String query = String.format("SELECT * FROM steps WHERE CAST(date AS UNSIGNED) BETWEEN %d AND %d AND users_id=%d", from, to, users_id);
+                long convertedFrom = dateTimeToEpoch(from);
+                long convertedTo = dateTimeToEpoch(to);
+                String query = String.format("SELECT * FROM steps WHERE CAST(date AS UNSIGNED) BETWEEN %d AND %d AND users_id=%d",
+                        convertedFrom, convertedTo, users_id);
                 List<Steps> steps = fetch(query);
                 return Response.ok(steps).build();
             }

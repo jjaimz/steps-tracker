@@ -41,7 +41,6 @@ public class WebServer {
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.packages("com.steps.api");
         resourceConfig.register(JacksonFeature.class);
-//        resourceConfig.register(Hello.class);
 
         handler.addServlet(new ServletHolder(new ServletContainer(resourceConfig)), "/api/*");
 

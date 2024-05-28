@@ -147,10 +147,11 @@ public class StepsResource {
         }
     }
     @DELETE
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteSteps(Steps step) {
+    public Response deleteSteps(@PathParam("id") int id) {
         try {
-            if (step.getId() == 0) {
+            if (id == 0) {
                 ErrorResponse err = new ErrorResponse();
                 err.setErrorCode(42008);
                 err.setErrorMessage("Steps id parameter not provided");
@@ -159,7 +160,7 @@ public class StepsResource {
                         .build();
             }
 
-            String query = "SELECT * FROM steps WHERE id=" + step.getId();
+            String query = "SELECT * FROM steps WHERE id=" + id;
             List<Steps> steps = fetch(query);
             if (steps.isEmpty()) {
                 ErrorResponse err = new ErrorResponse();
@@ -169,7 +170,7 @@ public class StepsResource {
                         .entity(err)
                         .build();
             }
-            removeEntity(step);
+            removeEntity(steps.get(0));
             return Response.noContent().build();
         }
         catch (Exception e) {

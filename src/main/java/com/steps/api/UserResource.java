@@ -192,11 +192,11 @@ public class UserResource {
     }
 
     @DELETE
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response deleteUser(User user) throws SQLException {
+    public Response deleteUser(@PathParam("id") int id) throws SQLException {
         try {
-            if (user.getId() == 0) {
+            if (id == 0) {
                 ErrorResponse err = new ErrorResponse();
                 err.setErrorCode(41009);
                 err.setErrorMessage("Delete failed due to id not being provided");
@@ -204,7 +204,7 @@ public class UserResource {
                         .entity(err)
                         .build();
             }
-            String query = String.format("SELECT * FROM users WHERE id=%d", user.getId());
+            String query = String.format("SELECT * FROM users WHERE id=%d", id);
             List<User> users = fetch(query);
 
             if (users.isEmpty()) {
@@ -215,8 +215,7 @@ public class UserResource {
                         .entity(err)
                         .build();
             }
-            user = users.get(0);
-            removeEntity(user);
+            removeEntity(users.get(0));
             return Response.noContent().build();
         }
         catch (Exception e) {

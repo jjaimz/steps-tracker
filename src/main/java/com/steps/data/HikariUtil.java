@@ -47,6 +47,7 @@ public class HikariUtil {
                     user.setName(rs.getString("name"));
                     user.setEmail(rs.getString("email"));
                     user.setPassword(rs.getString("password"));
+                    user.setAdmin(rs.getInt("admin"));
 
                     if (user != null) {
                         result.add((T) user);
@@ -86,12 +87,14 @@ public class HikariUtil {
             if (item instanceof User) {
 
                 statement = connection.prepareStatement(
-                        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)"
+                        "INSERT INTO users (name, email, password, admin) VALUES (?, ?, ?, ?)"
                 );
 
                 statement.setString(1, ((User) item).getName());
                 statement.setString(2, ((User) item).getEmail());
                 statement.setString(3, encryptPassword(((User) item).getPassword()));
+                statement.setInt(4, ((User) item).getAdmin());
+
             } else if (item instanceof Steps) {
                 statement = connection.prepareStatement(
                         "INSERT INTO steps (users_id, date, steps, image) VALUES (?, ?, ?, ?)"
@@ -119,13 +122,14 @@ public class HikariUtil {
             PreparedStatement statement = null;
             if (item instanceof User) {
                 statement = connection.prepareStatement(
-                        "UPDATE users SET name=?, email=?, password=? WHERE id=?"
+                        "UPDATE users SET name=?, email=?, password=?, admin=? WHERE id=?"
                 );
 
                 statement.setString(1, ((User) item).getName());
                 statement.setString(2, ((User) item).getEmail());
                 statement.setString(3, ((User) item).getPassword());
-                statement.setInt(4, ((User) item).getId());
+                statement.setInt(4, ((User) item).getAdmin());
+                statement.setInt(5, ((User) item).getId());
 
             } else if (item instanceof Steps) {
                 statement = connection.prepareStatement(

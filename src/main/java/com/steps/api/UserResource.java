@@ -61,7 +61,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addUser(User user) throws SQLException {
         try {
-            if (user.getEmail() == null || user.getName() == null || user.getPassword() == null) {
+            if (user.getEmail() == null || user.getName() == null || user.getPassword() == null || user.getAdmin() == null) {
                 ErrorResponse err = new ErrorResponse();
                 err.setErrorCode(41003);
 
@@ -86,6 +86,15 @@ public class UserResource {
                     }
                     else {
                         miss_params = "password";
+                    }
+                    missing_params++;
+                }
+                if (user.getAdmin() == null) {
+                    if (missing_params > 0) {
+                        miss_params += ", admin";
+                    }
+                    else {
+                        miss_params = "admin";
                     }
                     missing_params++;
                 }
@@ -128,7 +137,7 @@ public class UserResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response updateUser(User user) throws SQLException {
         try {
-            if (user.getId() == 0 || user.getEmail() == null || user.getName() == null) {
+            if (user.getId() == 0 || user.getEmail() == null || user.getName() == null || user.getAdmin() == null) {
 
                 ErrorResponse err = new ErrorResponse();
                 err.setErrorCode(41006);
@@ -158,6 +167,15 @@ public class UserResource {
                     }
                     missing_params++;
                 }
+                if (user.getAdmin() == null) {
+                    if (missing_params > 0) {
+                        miss_params += ", admin";
+                    }
+                    else {
+                        miss_params = "admin";
+                    }
+                    missing_params++;
+                }
                 err.setErrorMessage(missing_params + " missing parameters: " + miss_params);
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
@@ -170,7 +188,7 @@ public class UserResource {
             if (users.isEmpty()) {
                 ErrorResponse err = new ErrorResponse();
                 err.setErrorCode(41007);
-                err.setErrorMessage("Delete failed due to user with corresponding id not existing");
+                err.setErrorMessage("Update failed due to user with corresponding id not existing");
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
                         .build();
@@ -190,7 +208,6 @@ public class UserResource {
                     .build();
         }
     }
-
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)

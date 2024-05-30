@@ -10,14 +10,19 @@ public class User {
     private String email;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+    @JsonProperty("admin")
+    private Integer admin;
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, Integer admin) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.admin = admin;
     }
 
-    public User() {}
+    public User() {
+        this.admin = null;
+    }
 
     public String getName() {
         return name;
@@ -51,6 +56,14 @@ public class User {
         this.id = id;
     }
 
+    public Integer getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(int admin) {
+        this.admin = admin;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -58,6 +71,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", role=" + admin +
                 '}';
     }
 }

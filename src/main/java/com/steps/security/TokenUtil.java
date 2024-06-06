@@ -81,28 +81,5 @@ public class TokenUtil {
         return true;
     }
 
-    public static void main(String[] args) {
-        String payload = "eyJzdWIiOiIxIiwiZXhwIjoxNzE3Njg4NzEwMDA2IiwiYWRtaW4iOjF9";
-        byte[] payloadBytes = Base64.getDecoder().decode(payload);
-        String payloadJson = new String(payloadBytes);
-
-        System.out.println(payloadJson);
-
-        String[] keyValuePairs = payloadJson.replaceAll("[{}\"]", "").split(",");
-
-        // Iterate over key-value pairs
-        for (String pair : keyValuePairs) {
-            // Split key-value pair by colon
-            String[] keyValue = pair.split(":");
-
-            // Extract key and value
-            String key = keyValue[0].trim();
-            String value = keyValue[1].trim();
-
-            // Print key and value
-            System.out.println(key + ": " + value);
-        }
-    }
-
 
 }

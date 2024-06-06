@@ -77,7 +77,7 @@ public class StepsResource {
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
             err.setErrorCode(42004);
-            err.setErrorMessage("Exception occurred during steps creation process: " + e.getMessage());
+            err.setErrorMessage("Exception occurred during steps retrieval process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)
                     .build();

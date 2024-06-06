@@ -10,8 +10,6 @@ import static com.steps.data.HikariUtil.getUserByEmail;
 
 public class TokenUtil {
 
-    private static final String SECRET_KEY = "ARm0et0SeyARTdnz6ZPtVEq5TxUjB2";
-
     public static String generateToken(String email) {
         String header = "{\"typ\":\"JWT\",\"alg\":\"HS256\"}";
 
@@ -26,7 +24,7 @@ public class TokenUtil {
 
         String signData = b64header + "." + b64payload;
 
-        byte[] signedBytes = calculateHmacSha256(signData.getBytes(), SECRET_KEY.getBytes());
+        byte[] signedBytes = calculateHmacSha256(signData.getBytes(), System.getenv("SECRET_KEY").getBytes());
 
         return b64header + "." + b64payload + "." + Base64.getUrlEncoder().encodeToString(signedBytes);
     }
@@ -34,7 +32,7 @@ public class TokenUtil {
     public static boolean verifyToken(String token) {
         String[] parts = token.split("\\.");
         String clientSignData = parts[0] + "." + parts[1];
-        byte[] signedBytes = calculateHmacSha256(clientSignData.getBytes(), SECRET_KEY.getBytes());
+        byte[] signedBytes = calculateHmacSha256(clientSignData.getBytes(), System.getenv("SECRET_KEY").getBytes());
         return parts[2].equals(Base64.getUrlEncoder().encodeToString(signedBytes));
 
     }
@@ -49,4 +47,5 @@ public class TokenUtil {
             throw new RuntimeException("Failed to calculate HMAC-SHA256", e);
         }
     }
+
 }

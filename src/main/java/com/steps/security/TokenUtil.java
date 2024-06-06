@@ -33,6 +33,10 @@ public class TokenUtil {
 
     public static boolean verifyToken(String token) {
         String[] parts = token.split("\\.");
+
+        if (parts.length != 3) {
+            return false;
+        }
         String clientSignData = parts[0] + "." + parts[1];
         byte[] signedBytes = calculateHmacSha256(clientSignData.getBytes(), System.getenv("SECRET_KEY").getBytes());
         return parts[2].equals(Base64.getUrlEncoder().encodeToString(signedBytes));

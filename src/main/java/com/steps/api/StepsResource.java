@@ -9,14 +9,26 @@ import java.util.List;
 
 import static com.steps.api.DatetimeService.dateTimeToEpoch;
 import static com.steps.data.HikariUtil.*;
+import static com.steps.security.TokenUtil.checkBearer;
 
 @Path("/steps")
 public class StepsResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSteps(@QueryParam("id") Integer id, @QueryParam("from") String from, @QueryParam("to") String to,
+    public Response getSteps(@HeaderParam("Authorization") String authHeader, @QueryParam("id") Integer id,
+                             @QueryParam("from") String from, @QueryParam("to") String to,
                              @QueryParam("users_id") Integer users_id) {
         try {
+            if (!checkBearer(authHeader)) {
+                ErrorResponse err = new ErrorResponse();
+                err.setErrorCode(42011);
+                err.setErrorMessage("Not Authorized");
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(err)
+                        .build();
+            }
+
+
             if (id != null) {
 
                 String query = "SELECT * FROM steps WHERE id =" + id;
@@ -164,7 +176,7 @@ public class StepsResource {
             List<Steps> steps = fetch(query);
             if (steps.isEmpty()) {
                 ErrorResponse err = new ErrorResponse();
-                err.setErrorCode(42008);
+                err.setErrorCode(42009);
                 err.setErrorMessage("Steps record with id not found");
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity(err)
@@ -175,7 +187,7 @@ public class StepsResource {
         }
         catch (Exception e) {
             ErrorResponse err = new ErrorResponse();
-            err.setErrorCode(42009);
+            err.setErrorCode(42010);
             err.setErrorMessage("Exception occurred during steps deletion process: " + e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(err)

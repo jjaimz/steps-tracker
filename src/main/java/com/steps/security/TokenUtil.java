@@ -5,6 +5,8 @@ import com.steps.business.User;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.steps.data.HikariUtil.getUserByEmail;
 
@@ -47,5 +49,60 @@ public class TokenUtil {
             throw new RuntimeException("Failed to calculate HMAC-SHA256", e);
         }
     }
+
+    public Map<String, String> getPayloadMap(String payload) {
+        byte[] payloadBytes = Base64.getDecoder().decode(payload);
+        String payloadJson = new String(payloadBytes);
+
+        String[] keyValuePairs = payloadJson.replaceAll("[{}\"]", "").split(",");
+
+        HashMap<String, String> map = new HashMap<>();
+
+        for (String pair : keyValuePairs) {
+            String[] keyValue = pair.split(":");
+
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    public static boolean checkBearer(String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return false;
+        }
+
+        String token = authHeader.substring("Bearer ".length()).trim();
+
+        if (!verifyToken(token)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static void main(String[] args) {
+        String payload = "eyJzdWIiOiIxIiwiZXhwIjoxNzE3Njg4NzEwMDA2IiwiYWRtaW4iOjF9";
+        byte[] payloadBytes = Base64.getDecoder().decode(payload);
+        String payloadJson = new String(payloadBytes);
+
+        System.out.println(payloadJson);
+
+        String[] keyValuePairs = payloadJson.replaceAll("[{}\"]", "").split(",");
+
+        // Iterate over key-value pairs
+        for (String pair : keyValuePairs) {
+            // Split key-value pair by colon
+            String[] keyValue = pair.split(":");
+
+            // Extract key and value
+            String key = keyValue[0].trim();
+            String value = keyValue[1].trim();
+
+            // Print key and value
+            System.out.println(key + ": " + value);
+        }
+    }
+
 
 }
